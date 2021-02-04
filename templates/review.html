@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Review</title>
+    <style>
+        .pricing-card-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* number of lines to show */
+            -webkit-box-orient: vertical;
+        }
+
+    </style>
+{% endblock %}
+
+
+{% block body %}
+
+    <section class="py-5 text-center container">
+        <div class="row">
+            <div class="mx-auto">
+                <h1 style="display: inline" class="fw-light mx-5">Review findings before publication</h1>
+                {#                    <a style="display: inline" class="btn btn-success" >+ Submit</a>#}
+                {#        <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>#}
+                {#        <p>#}
+                {#          <a href="#" class="btn btn-primary my-2">Main call to action</a>#}
+                {#          <a href="#" class="btn btn-secondary my-2">Secondary action</a>#}
+                {#        </p>#}
+            </div>
+        </div>
+
+
+    </section>
+
+    <a href="/trash"><img src="/static/trash.png" width="20" height="20" alt=""></a><small>({{ trash }})</small>
+
+
+
+
+
+
+    <hr>
+    {% if items|length %}
+        {% for item in items %}
+            <div class="col">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4 class="my-0 fw-normal">{{ item['Title'] }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title pricing-card-title">{{ item['Content'] }} </h4>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>Submitted by: {{ item['CreatedBy'] }}</li>
+                            <li>Submitted on: {{ item['CreatedAt'] }}</li>
+                        </ul>
+                        <a class="btn btn-lg btn-outline-primary"
+                           href="/review/submission={{ item['Uid'] }}by={{ item['CreatedBy'] }}">Review</a>
+                        <a class="btn btn-lg btn-outline-danger" data-bs-toggle="modal"
+                           data-bs-target="#deleteModal-{{ item['Uid'] }}">Delete</a>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Popup Modal -->
+            <div class="modal fade" id="deleteModal-{{ item['Uid'] }}" tabindex="-1" aria-labelledby="deleteModal"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModal">Are you sure you want to delete {{ item['Title'] }}?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            This will throw this submission to the trash so you'll be able to recover it.
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-danger"
+                               href="/submission/delete={{ item['Uid'] }}by={{ item['CreatedBy'] }}">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    {% else %}
+        <h3 style="display: inline" class="fw-light mx-auto">No submissions to review</h3>
+    {% endif %}
+
+
+
+
+
+{% endblock %}

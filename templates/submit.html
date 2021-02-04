@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Submit</title>
+
+{% endblock %}
+
+{% block body %}
+
+
+<br>
+<div>
+    <h1 style="display:inline">Submit a new finding</h1>
+</div>
+
+<hr>
+<form class="form-horizontal" action="/submit" method="post">
+    {{ form.csrf_token }}
+
+    <label for="title">Title</label>
+    <input class="form-control" type="text" name="title" id="title" placeholder="Enter title" aria-label="Enter title">
+    <ul>
+        {% for error in form.title.errors %}
+            <li style="color: #9C1A1C">{{ error }}</li>
+        {% endfor %}
+    </ul>
+    <br><br>
+
+    <div class="form-group">
+        <label for="content">Content</label>
+        <textarea class="form-control" name="content" id="content"  placeholder="Enter content" rows="10"></textarea>
+        <ul>
+            {% for error in form.content.errors %}
+                <li style="color: #9C1A1C">{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+        <br><br>
+
+    <input class="btn btn-outline-success mx-auto btn-lg" width="50" type="submit" name="submit" value="Submit" >
+    <input class="btn btn-outline-primary mx-auto btn-lg" width="50" type="submit" name="submit" value="Submit and create another" >
+
+</form>
+
+
+<hr>
+
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>View</title>
+    <style>
+        h2 {
+            font-family: Tahoma;
+            font-weight: bold;
+
+        }
+
+        p {
+            font-family: Tahoma;
+            margin: 0;
+            padding: 0;
+        }
+
+        br {
+            font-family: Tahoma;
+            font-size: 18.66px;
+            line-height: 18.66px;
+            max-lines: 1;
+            line-break: initial;
+            display: block;
+            margin: 0;
+            padding: 0;
+            content: "";
+        }
+
+        #title {
+            margin-bottom: 10px;
+
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <section class="py-5 text-center container">
+        <div id="header" class="row">
+            <div class="mx-auto">
+                <h1 style="display: inline" class="fw-light mx-5">View Finding</h1><br><br>
+            </div>
+        </div>
+
+    </section>
+    <small style="display: inline" class="fw-light">Submitted By: {{ item['CreatedBy'] }}</small><br>
+    <small style="display: inline" class="fw-light">Reviewed By:&nbsp {{ item['ReviewedBy'] }}</small><br>
+    <small style="display: inline" class="fw-light">Published At:&nbsp {{ item['ReviewedAt'] }}</small><br>
+
+    <hr>
+    {#green : 70ad47#}
+    {#yello : ffc000 #}
+    {#red :ff0000 #}
+    {#     #}
+    <div id="finding">
+        <p style="font-size: 21px"><b>{{ item['Title'] }}</b></p>
+        {#Line Break    #}
+        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+
+        <p id="title" style="font-size: 18.66px"><u>Finding Description Title:</u></p>
+        <p style="font-size: 13.33px">{{ item['Description'] }}</p>
+        {#Line Break    #}
+        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+
+        <p style="font-size: 13.33px">Probability: <a style="font-size: 13.33px"><b>{{ item['Probability'] }}</b></a></p>
+        <p style="font-size: 13.33px">Severity: <a style="font-size: 13.33px"><b>{{ item['Severity'] }}</b></a></p>
+        <p style="font-size: 13.33px"><b>Overall Risk:</b> <a style="font-size: 13.33px"><b>{{ item['OverallRisk'] }}</b></a>
+        </p>
+        {#Line Break    #}
+        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+
+        <p id="title" style="font-size: 18.66px"><u>Risk Description Title:</u></p>
+        <p style="font-size: 13.33px">{{ item['RiskDetails'] }}</p>
+        {#Line Break    #}
+        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+
+        <p id="title" style="font-size: 18.66px"><u>Recommendations Title:</u></p>
+        <p id="recommendations" style="font-size: 13.33px"></p><br>
+    </div>
+
+
+
+    {# Format recommendations   #}
+    <script>
+        const element = document.getElementById("recommendations")
+        const text = `{{ item['Recommendations'] }}`
+
+        const split = text.split("\n")
+        let finalString = ""
+
+
+        for (let x = 0; x < split.length; x++) {
+            const splitText = split[x].trim()
+            const finalText = '\u2713 ' + splitText
+            finalString = finalString + finalText + "\n"
+
+        }
+        element.innerText = finalString
+    </script>
+
+    {# Format ranks colors  #}
+    <script>
+        const findingDiv = document.getElementById('finding')
+        const elements = findingDiv.getElementsByTagName('A')
+
+        for (i = 0; i<elements.length;i++) {
+            const el = elements[i]
+
+            if (el.innerText === "Low"){
+                el.style.color = "#70ad47"
+            }
+            else if (el.innerText === "Medium"){
+                el.style.color = "#ffc000"
+            }
+            else if (el.innerText === "High"){
+                el.style.color = "#ff0000"
+            }
+
+        }
+
+        {#for (let x = 0; x < split.length; x++) {#}
+        {#    const splitText = split[x].trim()#}
+        {#    const finalText = '\u2713 ' + splitText#}
+        {#    finalString = finalString + finalText + "\n"#}
+
+
+    </script>
+
+{% endblock %}
