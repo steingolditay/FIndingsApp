@@ -38,14 +38,14 @@
     <section class="py-5 text-center container">
         <div id="header" class="row">
             <div class="mx-auto">
-                <h1 style="display: inline" class="fw-light mx-5">View Finding</h1><br><br>
+                <h1 style="display: inline" class="fw-light mx-5">צפייה בממצא</h1><br><br>
             </div>
         </div>
 
     </section>
-    <small style="display: inline" class="fw-light">Submitted By: {{ item['CreatedBy'] }}</small><br>
-    <small style="display: inline" class="fw-light">Reviewed By:&nbsp {{ item['ReviewedBy'] }}</small><br>
-    <small style="display: inline" class="fw-light">Published At:&nbsp {{ item['ReviewedAt'] }}</small><br>
+    <small style="display: inline" class="fw-light">נוצר על ידי: {{ item['CreatedBy'] }}</small><br>
+    <small style="display: inline" class="fw-light">נסקר על ידי:&nbsp {{ item['ReviewedBy'] }}</small><br>
+    <small style="display: inline" class="fw-light"> פורסם בתאריך:&nbsp {{ item['ReviewedAt'] }}</small><br>
 
     <hr>
     {#green : 70ad47#}
@@ -57,24 +57,24 @@
         {#Line Break    #}
         <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p id="title" style="font-size: 18.66px"><u>Finding Description Title:</u></p>
+        <p id="title" style="font-size: 18.66px"><u>פירוט הממצא</u></p>
         <p style="font-size: 13.33px">{{ item['Description'] }}</p>
         {#Line Break    #}
         <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p style="font-size: 13.33px">Probability: <a style="font-size: 13.33px"><b>{{ item['Probability'] }}</b></a></p>
-        <p style="font-size: 13.33px">Severity: <a style="font-size: 13.33px"><b>{{ item['Severity'] }}</b></a></p>
-        <p style="font-size: 13.33px"><b>Overall Risk:</b> <a style="font-size: 13.33px"><b>{{ item['OverallRisk'] }}</b></a>
+        <p style="font-size: 13.33px">סבירות מימוש הסיכון: <a style="font-size: 13.33px"><b>{{ item['Probability'] }}</b></a></p>
+        <p style="font-size: 13.33px">חומרת הסיכון: <a style="font-size: 13.33px"><b>{{ item['Severity'] }}</b></a></p>
+        <p style="font-size: 13.33px"><b> רמת סיכון:</b> <a style="font-size: 13.33px"><b>{{ item['OverallRisk'] }}</b></a>
         </p>
         {#Line Break    #}
         <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p id="title" style="font-size: 18.66px"><u>Risk Description Title:</u></p>
+        <p id="title" style="font-size: 18.66px"><u>פירוט מימוש הסיכון</u></p>
         <p style="font-size: 13.33px">{{ item['RiskDetails'] }}</p>
         {#Line Break    #}
         <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p id="title" style="font-size: 18.66px"><u>Recommendations Title:</u></p>
+        <p id="title" style="font-size: 18.66px"><u>המלצות</u></p>
         <p id="recommendations" style="font-size: 13.33px"></p><br>
     </div>
 
@@ -107,12 +107,15 @@
             const el = elements[i]
 
             if (el.innerText === "Low"){
+                el.innerHTML = "<b>נמוכה<b>"
                 el.style.color = "#70ad47"
             }
             else if (el.innerText === "Medium"){
+                el.innerHTML = "<b>בינונית<b>"
                 el.style.color = "#ffc000"
             }
             else if (el.innerText === "High"){
+                el.innerHTML = "<b>גבוהה<b>"
                 el.style.color = "#ff0000"
             }
 

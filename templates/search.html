@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-    <title>Home</title>
+    <title>Search</title>
 
     <style>
         .pricing-card-title {
@@ -21,80 +21,183 @@
             -webkit-box-orient: vertical;
             min-height: 80px;
         }
+
+        .tag-container {
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            background: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            padding: 6px;
+        }
+
+        .tag-container .tag {
+            height: 30px;
+            margin: 5px;
+            padding: 5px 6px;
+            border: 1px solid #d0cece;
+            border-radius: 3px;
+            background: #eeeeee;
+            display: flex;
+            align-items: center;
+            color: #333;
+            cursor: default;
+        }
+
+        .tag i {
+            font-size: 16px;
+            color: #666;
+            margin-left: 5px;
+        }
+
+        .tag-container input {
+            padding: 5px;
+            font-size: 16px;
+            border: 0;
+            outline: none;
+            color: #333;
+            flex: 1;
+        }
+
+        .scrollable {
+            height: 150px;
+            overflow-y: scroll;
+        }
     </style>
+
 
 
 {% endblock %}
 
 {% block body %}
     <main>
+        {#        Title#}
         <section class="py-5 text-center container">
             <div class="row py-lg-2">
                 <div class="col-lg-6 col-md-2 mx-auto">
-                    <h1 style="display: inline" class="fw-light mx-5">Recent Findings</h1>
-                    {#                    <a style="display: inline" class="btn btn-success" >+ Submit</a>#}
-                    {#        <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>#}
-                    {#        <p>#}
-                    {#          <a href="#" class="btn btn-primary my-2">Main call to action</a>#}
-                    {#          <a href="#" class="btn btn-secondary my-2">Secondary action</a>#}
-                    {#        </p>#}
+                    <h1 style="display: inline" class="fw-light mx-5">חיפוש ממצאים</h1>
                 </div>
             </div>
         </section>
+        {#        Keyword Search#}
+        <form class="mx-auto" method="post">
+            {{ form.csrf_token }}
+            <div class="tag-container">
+                <input id="keywords" placeholder="מילות חיפוש..."/>
+                <input type="hidden" name="hidden" id="hidden">
+                <input type="hidden" name="tags" id="tags">
+            </div>
+            <small id="keywordHelp" class="form-text text-muted">* יש להפריד בין מילות חיפוש באמעות רווח</small>
+            {% for error in form.hidden.errors %}
+                <li style="color: #9C1A1C">{{ error }}</li>
+            {% endfor %}
+
+            {#        Tag Search#}
+            <br>
+            <div class="border mt-4">
+                <nav class="bg-light sidebar mt-auto">
+                    <div class="tag-container">
+                        <input id="tag-search" type="text" class="fw-light list-group-item" placeholder="טאגים...">
+                    </div>
+                    <div class="sidebar-sticky scrollable">
+                        {% for tag in tags %}
+                            {% set finalTag = tag.replace('&', '').replace(' ', '') %}
+                            <li class="list-group-item tag-item" id="{{ finalTag }}">
+                                <input id="checkbox+{{ tag }}" class="form-check-input checkbox" type="checkbox"
+                                       value="{{ tag }}">
+                                <label class="form-check-label" for="checkbox+{{ tag }}">{{ tag }}</label><br>
+                            </li>
+
+                        {% endfor %}
+                        <br>
+                    </div>
+
+                </nav>
+            </div>
 
 
-        <form class="col-sm-4 mx-auto">
-            <div class="form-group ">
-                <label for="keyword">Keyword</label>
-                <input type="text" class="form-control" id="keyword" aria-describedby="keyword"
-                       placeholder="Enter keyword">
-                <small id="keywordHelp" class="form-text text-muted">Search for keywords in the finding'ss title and body</small>
-            </div>
-                <br>
-            <div class="form-group">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Password">
-            </div>
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Check me out</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <br>
+            <button type="submit" class="btn btn-outline-primary">חפש</button>
+
         </form>
 
+        <hr class="mt-4">
 
-        <div class="album py-5 bg-light">
-            <div class="container">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    {% for item in items %}
-                        <div class="col">
-                            <div class="card shadow-sm">
-                                <h2 class="fw-light mx-3 mt-3 pricing-card-title">{{ item['Title'] }}</h2>
-                                {#                                <svg class="bd-placeholder-img card-img-top" width="100%" height="225"#}
-                                {#                                     xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"#}
-                                {#                                     preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>#}
-                                {#                                    <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>#}
-                                {#                                </svg>#}
-                                <div class="card-body">
-                                    <h6 class="card-text fw-light pricing-card-body">{{ item['Description'] }}</h6>
-                                    <h6 class="card-text fw-light">{{ item['OverallRisk'] }}</h6>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="btn-group">
-                                            <a type="button" class="btn btn-sm btn-outline-secondary"
-                                               href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">View</a>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary">Download
-                                            </button>
+        {#        Result Items#}
+        {% if items %}
+            <div class="album py-5 bg-light mt-4">
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        {% for item in items %}
+                            <div class="col">
+                                <div class="card shadow-sm">
+                                    <h2 class="fw-light mx-3 mt-3 pricing-card-title">{{ item['Title'] }}</h2>
+                                    <div class="card-body">
+                                        <h6 class="card-text fw-light pricing-card-body">{{ item['Description'] }}</h6>
+                                        <h6 class="card-text fw-light">{{ item['OverallRisk'] }}</h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="btn-group">
+                                                <a type="button" class="btn btn-sm btn-outline-secondary"
+                                                   href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">View</a>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary">Download
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">{{ item.timestamp }}</small>
                                         </div>
-                                        <small class="text-muted">{{ item.timestamp }}</small>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
+
+        {% endif %}
+
+        <script src="/static/js/tagsInput.js"></script>
+
+        <script>
+            // store tags for submission
+            let tagsList = []
+            let tagsSearch = document.getElementById('tag-search')
+            let tagItems = document.getElementsByClassName('tag-item')
+            let hidden = document.getElementById('tags')
+            let checkboxes = document.getElementsByClassName('checkbox')
+            for (let i = 0; i < checkboxes.length; i++) {
+                let checkbox = checkboxes[i]
+                checkbox.addEventListener('change', function () {
+                    if (checkbox.checked) {
+                        tagsList.push(checkbox.value)
+                    } else {
+                        const index = tagsList.indexOf(checkbox.value);
+                        tagsList = [...tagsList.slice(0, index), ...tagsList.slice(index + 1)];
+                    }
+                    hidden.value = tagsList
+                })
+            }
+            // hide and show tag search
+            tagsSearch.addEventListener('input', function(){
+                for (let i = 0; i<tagItems.length; i++){
+                    let item = tagItems[i]
+                    const itemId = item.id.toLowerCase()
+                    const searchValue = tagsSearch.value.toLowerCase()
+                    const parsedItemId = item.id.replace('&', '').replace(' ', '')
+                    if (itemId.includes(searchValue) || searchValue === ""){
+                        $("#"+parsedItemId.toString()).show(200)
+                    }
+                    else {
+                        $("#"+parsedItemId.toString()).hide(200)
+                    }
+                }
+            })
+        </script>
+
+        <script>
+
+        </script>
 
 
+    </main>
 {% endblock %}

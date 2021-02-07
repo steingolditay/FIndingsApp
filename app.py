@@ -1,44 +1,25 @@
-from flask import Flask, render_template, request, redirect, flash
-from flask_wtf import FlaskForm
+from flask import Flask, render_template, request, redirect
 import boto3
-from boto3.dynamodb.conditions import Attr, Key
+from boto3.dynamodb.conditions import Attr
 from uuid import uuid4
 import os
 import time
-from wtforms import StringField, SubmitField, SelectField
-from wtforms.validators import InputRequired, Length, DataRequired
-from wtforms.widgets import TextArea, Select
 import datetime
 from flask_wtf import CSRFProtect
+from helpers import search_results, tag_list
+from form_classes import SearchFrom, PublishForm, SubmitForm
 
-
-select_field_choices = [("Low", "Low"), ("Medium", "Medium"), ("High", "High")]
+tag_list.sort()
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-
 dynamodb = boto3.resource('dynamodb')
 submissions_table = dynamodb.Table('submissions')
 findings_table = dynamodb.Table('findings')
 
-
-class PublishForm(FlaskForm):
-    title = StringField('title', validators=[InputRequired(), Length(min=6)])
-    finding_description = StringField('finding_description', validators=[InputRequired(), Length(min=6)])
-    risk_probability = SelectField('risk_probability', widget=Select, choices=select_field_choices, validators=[DataRequired()])
-    risk_severity = SelectField('risk_severity', widget=Select, choices=select_field_choices, validators=[DataRequired()])
-    risk_level = SelectField('risk_level', widget=Select, choices=select_field_choices, validators=[DataRequired()])
-    risk_description = StringField('risk_description', widget=TextArea(), validators=[InputRequired(), Length(min=6)])
-    risk_recommendations = StringField('risk_recommendations', widget=TextArea(), validators=[InputRequired(), Length(min=6)])
-    hidden = StringField('hidden')
-
-
-class SubmitForm(FlaskForm):
-    title = StringField('title', validators=[InputRequired(), Length(min=6)])
-    content = StringField('content', validators=[InputRequired(), Length(min=20)])
 
 
 @app.route('/')
@@ -50,7 +31,7 @@ def home():
     ordered_items = sorted(items, key=lambda k: k['CreatedAt'], reverse=True)
     for item in ordered_items:
         timestamp = item['CreatedAt']
-        real_time = str(datetime.datetime.fromtimestamp(float(timestamp)//1000.0))
+        real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0))
         item['CreatedAt'] = real_time
     # make a list of recent approved findings only
     return render_template('index.html', items=ordered_items)
@@ -63,17 +44,17 @@ def submit_new_finding():
     # validates input and csrf token
     if form.validate_on_submit():
         submissions_table.put_item(
-              Item={
-                  'Uid': str(uuid4()),
-                  'CreatedBy': "logged_user_uid",
-                  'CreatedAt': str(round(time.time()*1000)),
-                  'Title': form.title.data,
-                  'Content': form.content.data,
-                  'Reviewed': False,
-                  'ReviewedBy': "",
-                  'Deleted': False
-              }
-            )
+            Item={
+                'Uid': str(uuid4()),
+                'CreatedBy': "logged_user_uid",
+                'CreatedAt': str(round(time.time() * 1000)),
+                'Title': form.title.data,
+                'Content': form.content.data,
+                'Reviewed': False,
+                'ReviewedBy': "",
+                'Deleted': False
+            }
+        )
         if request.form['submit'] == "Submit":
             return redirect('/')
         elif request.form['submit'] == "Submit and create another":
@@ -99,7 +80,7 @@ def review_list():
             i += 1
             items.remove(item)
         timestamp = item['CreatedAt']
-        real_time = str(datetime.datetime.fromtimestamp(float(timestamp)//1000.0))
+        real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0))
         item['CreatedAt'] = real_time
 
     return render_template('review.html', items=items, trash=i)
@@ -134,26 +115,28 @@ def review_submission(Uid, CreatedBy):
     item = response['Item']
 
     if form.validate_on_submit():
+        tags = request.form['tags'].split(",")
+
         findings_table.put_item(
-              Item={
-                  'Uid': Uid,
-                  'CreatedBy': CreatedBy,
-                  'CreatedAt': item['CreatedAt'],
-                  'ReviewedBy': "ReviewerId",
-                  'ReviewedAt': str(round(time.time() * 1000)),
-                  'Approved': False,
-                  'Title': form.title.data,
-                  'Description': form.finding_description.data,
-                  'RiskDetails': form.risk_description.data,
-                  'Probability': form.risk_probability.data,
-                  'Severity': form.risk_severity.data,
-                  'OverallRisk': form.risk_level.data,
-                  'Recommendations': form.risk_recommendations.data,
-                  'Published': True,
-                  'Deleted': False,
-                  'Tags': form.hidden.data
-              }
-            )
+            Item={
+                'Uid': Uid,
+                'CreatedBy': CreatedBy,
+                'CreatedAt': item['CreatedAt'],
+                'ReviewedBy': "ReviewerId",
+                'ReviewedAt': str(round(time.time() * 1000)),
+                'Approved': False,
+                'Title': form.title.data,
+                'Description': form.finding_description.data,
+                'RiskDetails': form.risk_description.data,
+                'Probability': form.risk_probability.data,
+                'Severity': form.risk_severity.data,
+                'OverallRisk': form.risk_level.data,
+                'Recommendations': form.risk_recommendations.data,
+                'Published': True,
+                'Deleted': False,
+                'Tags': tags
+            }
+        )
         submissions_table.update_item(
             Key={
                 'Uid': Uid,
@@ -168,7 +151,7 @@ def review_submission(Uid, CreatedBy):
         )
         return redirect('/review')
 
-    return render_template("review_submission.html", item=item, form=form)
+    return render_template("review_submission.html", item=item, form=form, tags=tag_list)
 
 
 # View a specific published finding
@@ -184,10 +167,25 @@ def view_finding(Uid, CreatedBy):
 
     return render_template("view_finding.html", item=item)
 
-
+# Search
 @app.route('/search', methods=["GET", "POST"])
 def search():
-    return render_template("search.html")
+    form = SearchFrom(request.form)
+    items_list = []
+
+    if request.method == "POST":
+        keywords = [string.strip() for string in form.hidden.data.split(",")]
+        tags_list = [string.strip() for string in form.tags.data.split(",")]
+
+        response = findings_table.scan(
+            FilterExpression=Attr('Published').eq(True)
+        )
+        items = response['Items']
+        for item in items:
+            if search_results(keywords=keywords, tags_list=tags_list, item=item):
+                items_list.append(item)
+
+    return render_template("search.html", items=items_list, form=form, tags=tag_list)
 
 
 if __name__ == '__main__':

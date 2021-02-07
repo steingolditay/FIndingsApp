@@ -1,48 +1,48 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Submit</title>
+    <title>Submit</title>
 
 {% endblock %}
 
 {% block body %}
 
+    <section class="py-5 text-center container">
+        <div class="row py-lg-2">
+            <div class="col-lg-6 col-md-2 mx-auto">
+                <h1 style="display: inline" class="fw-light mx-5">הוספת ממצא חדש</h1>
+            </div>
+        </div>
+    </section>
 
-<br>
-<div>
-    <h1 style="display:inline">Submit a new finding</h1>
-</div>
 
-<hr>
-<form class="form-horizontal" action="/submit" method="post">
-    {{ form.csrf_token }}
-
-    <label for="title">Title</label>
-    <input class="form-control" type="text" name="title" id="title" placeholder="Enter title" aria-label="Enter title">
-    <ul>
-        {% for error in form.title.errors %}
-            <li style="color: #9C1A1C">{{ error }}</li>
-        {% endfor %}
-    </ul>
-    <br><br>
-
-    <div class="form-group">
-        <label for="content">Content</label>
-        <textarea class="form-control" name="content" id="content"  placeholder="Enter content" rows="10"></textarea>
+    <form class="form-horizontal" action="/submit" method="post">
+        {{ form.csrf_token }}
+        <label for="title">כותרת</label>
+        <input class="form-control" type="text" name="title" id="title" placeholder="הזן כותרת..."
+               aria-label="Enter title">
         <ul>
-            {% for error in form.content.errors %}
+            {% for error in form.title.errors %}
                 <li style="color: #9C1A1C">{{ error }}</li>
             {% endfor %}
         </ul>
-    </div>
         <br><br>
 
-    <input class="btn btn-outline-success mx-auto btn-lg" width="50" type="submit" name="submit" value="Submit" >
-    <input class="btn btn-outline-primary mx-auto btn-lg" width="50" type="submit" name="submit" value="Submit and create another" >
+        <div class="form-group">
+            <label for="content">תוכן</label>
+            <textarea class="form-control" name="content" id="content" placeholder="הזן תוכן" rows="10"></textarea>
+            <ul>
+                {% for error in form.content.errors %}
+                    <li style="color: #9C1A1C">{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <br><br>
 
-</form>
+        <input class="btn btn-outline-success mx-auto btn-lg" width="50" type="submit" name="submit" value="הוסף">
+        <input class="btn btn-outline-primary mx-auto btn-lg" width="50" type="submit" name="submit"
+               value="הוסף וצור נוסף">
 
-
-<hr>
+    </form>
 
 {% endblock %}

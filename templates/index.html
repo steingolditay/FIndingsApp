@@ -30,7 +30,7 @@
         <section class="py-5 text-center container">
             <div class="row py-lg-2">
                 <div class="col-lg-6 col-md-2 mx-auto">
-                    <h1 style="display: inline" class="fw-light mx-5">Recent Findings</h1>
+                    <h1 style="display: inline" class="fw-light mx-5">ממצאים אחרונים</h1>
 {#                    <a style="display: inline" class="btn btn-success" >+ Submit</a>#}
                     {#        <p class="lead text-muted">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>#}
                     {#        <p>#}
@@ -49,18 +49,13 @@
                         <div class="col">
                             <div class="card shadow-sm">
                                 <h2 class="fw-light mx-3 mt-3 pricing-card-title" >{{ item['Title'] }}</h2>
-{#                                <svg class="bd-placeholder-img card-img-top" width="100%" height="225"#}
-{#                                     xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"#}
-{#                                     preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>#}
-{#                                    <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>#}
-{#                                </svg>#}
                                 <div class="card-body">
                                     <h6 class="card-text fw-light pricing-card-body">{{ item['Description']}}</h6>
                                     <h6 class="card-text fw-light">{{ item['OverallRisk']}}</h6>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="btn-group">
-                                            <a type="button" class="btn btn-sm btn-outline-secondary" href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">View</a>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary">Download</button>
+                                            <a type="button" class="btn btn-sm btn-outline-secondary" href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">פתח</a>
+
                                         </div>
                                         <small class="text-muted">{{ item.timestamp }}</small>
                                     </div>
@@ -72,6 +67,6 @@
                 </div>
             </div>
         </div>
-
+</main>
 
 {% endblock %}

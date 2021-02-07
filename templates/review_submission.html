@@ -40,6 +40,11 @@
             color: #333;
             flex: 1;
         }
+
+        .scrollable {
+            height: 650px;
+            overflow-y: scroll;
+        }
     </style>
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
@@ -54,127 +59,183 @@
     <section class="py-5 text-center container">
         <div id="header" class="row">
             <div class="mx-auto">
-                <h1 style="display: inline" class="fw-light mx-5">Finding Review</h1>
+                <h1 style="display: inline" class="fw-light mx-5">עריכת ממצא</h1>
             </div>
         </div>
-
     </section>
-
     <hr>
-    <div class="col">
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header">
-                <h4 style="display: inline" class="my-0 fw-normal" data-toggle="collapse"
-                    href="#card">{{ item['Title'] }}</h4>
 
-                <a style="display: inline" class="btn btn-sm btn-upload float-end" data-toggle="collapse" href="#card"
-                   role="button" aria-expanded="false" aria-controls="card">
-                    Toggle
-                </a>
+
+    <div class="row">
+        <div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <h4 style="display: inline" class="my-0 fw-normal" data-toggle="collapse"
+                        href="#card">{{ item['Title'] }}</h4>
+
+                    <a style="display: inline" class="btn btn-sm btn-upload float-end" data-toggle="collapse"
+                       href="#card"
+                       role="button" aria-expanded="false" aria-controls="card">
+                        +
+                    </a>
+                </div>
+                <div class="card-body collapse" id="card">
+                    <h4 class="card-title pricing-card-title">{{ item['Content'] }} </h4>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        <li>נוצר על ידי: {{ item['CreatedBy'] }} </li>
+                        <li>נוצר בתאריך: {{ item['CreatedAt'] }} </li>
+                    </ul>
+                </div>
+
             </div>
-            <div class="card-body collapse" id="card">
-                <h4 class="card-title pricing-card-title">{{ item['Content'] }} </h4>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>Submitted by: {{ item['CreatedBy'] }}</li>
-                    <li>Submitted on: {{ item['CreatedAt'] }}</li>
-                </ul>
-            </div>
+        </div>
+
+
+        <div class="col-sm-8">
+            <form class="form-horizontal" action="/review/submission={{ item['Uid'] }}by={{ item['CreatedBy'] }}"
+                  method="post">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    <label for="title">כותרת הממצא</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ form.title.data }}">
+                    {% for error in form.title.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                    <br>
+                    <label for="finding_description">פירוט הממצא</label>
+                    <input type="text" class="form-control" id="finding_description" name="finding_description"
+                           value="{{ form.finding_description.data }}">
+                    {% for error in form.finding_description.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="risk_probability">סבירות מימוש הסיכון</label>
+                    <select class="form-control" id="risk_probability" name="risk_probability">
+                        <option>- select -</option>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                    </select>
+                    {% for error in form.risk_probability.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                    <br>
+                    <label for="risk_severity">חומרת הסיכון</label>
+                    <select class="form-control" id="risk_severity" name="risk_severity">
+                        <option>- select -</option>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                    </select>
+                    {% for error in form.risk_severity.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                    <br>
+                    <label for="risk_level">רמת סיכון כוללת</label>
+                    <select class="form-control" id="risk_level" name="risk_level">
+                        <option>- select -</option>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                    </select>
+                    {% for error in form.risk_level.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                </div>
+                <br>
+                <div class="form-group">
+                    <label for="risk_description">פירוט מימוש הסיכון</label>
+                    <textarea class="form-control" id="risk_description" name="risk_description" rows="5"></textarea>
+                    {% for error in form.risk_description.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                </div>
+
+                <br>
+                <div class="form-group " id="container">
+                    <label style="display: inline" for="risk_recommendations">המלצות</label>
+                    <textarea class="form-control" id="risk_recommendations" name="risk_recommendations"
+                              rows="5"></textarea>
+                    {% for error in form.risk_recommendations.errors %}
+                        <li style="color: #9C1A1C">{{ error }}</li>
+                    {% endfor %}
+                </div>
+                <br>
+                <div>
+                    <input class="tags" type="hidden" id="tags" name="tags">
+                    <input class="btn btn-outline-success mx-auto btn-lg" width="50" type="submit" id="submit"
+                           name="submit" value="פרסם">
+                </div>
+                <br><br>
+                <br>
+            </form>
+        </div>
+
+
+        <div class="container-fluid col-sm-4">
+            <nav class="bg-light sidebar list-group-item">
+                     <div class="tag-container">
+                        <input id="tag-search" type="text" class="fw-light list-group-item" placeholder="טאגים...">
+                    </div>
+                <div class="sidebar-sticky scrollable">
+                    {% for tag in tags %}
+                        {% set finalTag = tag.replace('&', '').replace(' ', '') %}
+                        <li class="list-group-item tag-item" id="{{ finalTag }}">
+                            <input id="checkbox+{{ tag }}" class="form-check-input checkbox" type="checkbox"
+                                   value="{{ tag }}">
+                            <label class="form-check-label" for="checkbox+{{ tag }}">{{ tag }}</label><br>
+                        </li>
+
+                    {% endfor %}
+                    <br>
+                </div>
+
+            </nav>
 
         </div>
     </div>
 
-    <div>
-        <form class="form-horizontal" action="/review/submission={{ item['Uid'] }}by={{ item['CreatedBy'] }}"
-              method="post">
-            {{ form.csrf_token }}
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" class="form-control" id="title" name="title" value="{{ form.title.data }}">
-                {% for error in form.title.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-                <br>
-                <label for="finding_description">Finding Description</label>
-                <input type="text" class="form-control" id="finding_description" name="finding_description"
-                       value="{{ form.finding_description.data }}">
-                {% for error in form.finding_description.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-            </div>
-            <br>
-            <div class="form-group">
-                <label for="risk_probability">Risk Probability</label>
-                <select class="form-control" id="risk_probability" name="risk_probability">
-                    <option>- select -</option>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                </select>
-                {% for error in form.risk_probability.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-                <br>
-                <label for="risk_severity">Risk Severity</label>
-                <select class="form-control" id="risk_severity" name="risk_severity">
-                    <option>- select -</option>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                </select>
-                {% for error in form.risk_severity.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-                <br>
-                <label for="risk_level">Overall Risk Level</label>
-                <select class="form-control" id="risk_level" name="risk_level">
-                    <option>- select -</option>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                </select>
-                {% for error in form.risk_level.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-            </div>
-            <br>
-            <div class="form-group">
-                <label for="risk_description">Risk Description</label>
-                <textarea class="form-control" id="risk_description" name="risk_description" rows="5"></textarea>
-                {% for error in form.risk_description.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-            </div>
-
-            <br>
-            <div class="form-group " id="container">
-                <label style="display: inline" for="risk_recommendations">Recommendations</label>
-                <textarea class="form-control" id="risk_recommendations" name="risk_recommendations"
-                          rows="5"></textarea>
-                {% for error in form.risk_recommendations.errors %}
-                    <li style="color: #9C1A1C">{{ error }}</li>
-                {% endfor %}
-            </div>
-            <br>
-            <label>Tags</label>
-            <div class="tag-container">
-                <input/>
-                <input type="hidden" name="hidden" id="hidden">
-            </div>
-            <br>
-            <div>
-
-                <input class="btn btn-outline-success mx-auto btn-lg" width="50" type="submit" id="submit" name="submit"
-                       value="Submit">
-            </div>
-            <br><br>
 
 
-            <br>
-        </form>
+
+    <script>
+        let tags = []
+        let tagsSearch = document.getElementById('tag-search')
+        let tagItems = document.getElementsByClassName('tag-item')
+        let hidden = document.getElementById('tags')
+        let checkboxes = document.getElementsByClassName('checkbox')
+        for (let i = 0; i < checkboxes.length; i++) {
+            let checkbox = checkboxes[i]
+            checkbox.addEventListener('change', function () {
+                if (checkbox.checked) {
+                    tags.push(checkbox.value)
+                } else {
+                    const index = tags.indexOf(checkbox.value);
+                    tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
+                }
+                hidden.value = tags
+                console.log(hidden.value)
+
+            })
+        }
+
+        tagsSearch.addEventListener('input', function () {
+            for (let i = 0; i < tagItems.length; i++) {
+                let item = tagItems[i]
+                const itemId = item.id.toLowerCase()
+                const searchValue = tagsSearch.value.toLowerCase()
+                const parsedItemId = item.id.replace('&', '').replace(' ', '')
+                if (itemId.includes(searchValue) || searchValue === "") {
+                    $("#" + parsedItemId.toString()).show(200)
+                } else {
+                    $("#" + parsedItemId.toString()).hide(200)
+                }
+            }
+        })
 
 
-    </div>
+    </script>
 
-
-    <script src="/static/js/tagsInput.js"></script>
 {% endblock %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="eng">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial">
@@ -21,34 +21,32 @@
 
 
 {#  Nevigation Bar    #}
-<body>
-  <nav class="navbar navbar-expand navbar-dark bg-dark" aria-label="" dir="ltr">
+<body dir="rtl">
+  <nav class="navbar navbar-expand navbar-dark bg-dark nav-tabs-justified" aria-label="">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
           <img src="/static/brand.png" width="60" height="40" alt="">
-          Whitehat - Findings</a>
+          Whitehat - ממצאים</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbar">
-        <ul class="navbar-nav me-auto">
+      <div class="collapse navbar-collapse active" id="navbar">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/">בית</a>
+          </li>
+            <li class="nav-item active">
+            <a class="nav-link" href="/search">חיפוש</a>
+          </li>
           <li class="nav-item active">
-            <a class="nav-link" aria-current="page" href="/">Home</a>
+            <a class="nav-link" href="/submit">הוספה</a>
           </li>
+
           <li class="nav-item">
-            <a class="nav-link" href="/submit">Submit</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/search">Advanced Search</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/review">Review</a>
+            <a class="nav-link" href="/review">סקירה</a>
           </li>
         </ul>
-        <form>
-          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-        </form>
       </div>
     </div>
   </nav>
