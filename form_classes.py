@@ -29,3 +29,10 @@ class PublishForm(FlaskForm):
 class SubmitForm(FlaskForm):
     title = StringField('title', validators=[InputRequired(), Length(min=6)])
     content = StringField('content', validators=[InputRequired(), Length(min=20)])
+
+
+class User:
+    def __init__(self, user_id, username, admin):
+        self.user_id = user_id
+        self.username = username
+        self.admin = admin

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify, make_response, url_for, session
 import boto3
 from boto3.dynamodb.conditions import Attr
 from uuid import uuid4
@@ -7,7 +7,10 @@ import time
 import datetime
 from flask_wtf import CSRFProtect
 from helpers import search_results, tag_list
-from form_classes import SearchFrom, PublishForm, SubmitForm
+from form_classes import SearchFrom, PublishForm, SubmitForm, User
+from flask_awscognito import AWSCognitoAuthentication, exceptions
+from flask_jwt_extended import JWTManager, get_jwt_identity, verify_jwt_in_request, get_current_user
+import jwt as jwt_lib
 
 tag_list.sort()
 
@@ -16,30 +19,114 @@ app.secret_key = os.urandom(24)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
+app.config['AWS_DEFAULT_REGION'] = 'eu-west-2'
+app.config['AWS_COGNITO_DOMAIN'] = 'https://findingsapp.auth.eu-west-2.amazoncognito.com'
+app.config['AWS_COGNITO_USER_POOL_ID'] = 'eu-west-2_CgBNp3mRF'
+app.config['AWS_COGNITO_USER_POOL_CLIENT_ID'] = '6asbffr0d7ne202o8c5v9vstoh'
+app.config['AWS_COGNITO_USER_POOL_CLIENT_SECRET'] = '9drrhmu1jkl4hk1afcc3kqduakbkp7bsodsknegmfqgtaplurkc'
+app.config['AWS_COGNITO_REDIRECT_URL'] = 'http://localhost:5000/aws_redirect'
+app.config['JWT_TOKEN_LOCATION'] = ['cookies', 'headers']
+app.config['JWT_IDENTITY_CLAIM'] = 'sub'
+app.config['JWT_ALGORITHM'] = 'RS256'
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['JWT_CSRF_IN_COOKIES'] = True
+app.config['JWT_ACCESS_CSRF_HEADER_NAME '] = "X-CSRF-TOKEN-ACCESS"
+
+app.config['JWT_PRIVATE_KEY'] = "5C87tihlDKkjp6H55_lpcCClrE7zHRLeNAbO1wELIkZzsw2EYzySjTHp594cadOupNqt57SnNoHyaPYPC4ApIyuWxUmYAak1FisZDpM_V108-_ZYIuFqPE6RfP__w05wanihyVCxT6RizW0hilxkkf-hTUOvgvpGm5HW3PKnMECypd2ve-A7ogcUTN6Cd6EXzPmBVSxp1OrgadRo-1eA6rXFGQKL13acU2KhViOtx1J8GSoow9Cz30gqqg9MY_CliZexlcGku191CH11H0nCBHc2pYz3tnen5SJukZkUGZZcwRcMhe_T1wymU4d6DKFc1_CJOZrhY_1Xyj7Mxo5vVQ"
+app.config['JWT_DECODE_ALGORITHMS'] = 'RS256'
+app.config['JWT_PUBLIC_KEY'] = '''-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5C87tihlDKkjp6H55/lp
+cCClrE7zHRLeNAbO1wELIkZzsw2EYzySjTHp594cadOupNqt57SnNoHyaPYPC4Ap
+IyuWxUmYAak1FisZDpM/V108+/ZYIuFqPE6RfP//w05wanihyVCxT6RizW0hilxk
+kf+hTUOvgvpGm5HW3PKnMECypd2ve+A7ogcUTN6Cd6EXzPmBVSxp1OrgadRo+1eA
+6rXFGQKL13acU2KhViOtx1J8GSoow9Cz30gqqg9MY/CliZexlcGku191CH11H0nC
+BHc2pYz3tnen5SJukZkUGZZcwRcMhe/T1wymU4d6DKFc1/CJOZrhY/1Xyj7Mxo5v
+VQIDAQAB
+-----END PUBLIC KEY-----
+'''
+
+aws_auth = AWSCognitoAuthentication(app)
+jwt = JWTManager(app)
+
 dynamodb = boto3.resource('dynamodb')
 submissions_table = dynamodb.Table('submissions')
 findings_table = dynamodb.Table('findings')
 
 
+@app.route('/sign_in')
+def sign_in():
+    return redirect(aws_auth.get_sign_in_url())
+
+
+@app.route('/aws_redirect')
+def aws():
+    # if someone tries to access this page directly,
+    # redirect them to the sign in page
+    # otherwise, get the Cognito access token and create a response
+    # insert the token into a secured cookie and add a csrf header
+    try:
+        access_token = aws_auth.get_access_token(request.args)
+        csrf_token = request.args['state']
+        decoded = jwt_lib.decode(access_token, options={"verify_signature": False})
+
+        # check if admin and set data to session
+        admin = ('admins' in decoded['cognito:groups'])
+        user = User(decoded['sub'], decoded['username'], admin)
+        session['userId'] = user.user_id
+        session['userName'] = user.username
+
+        response = make_response(redirect(url_for('.home')))
+        response.set_cookie("access_token_cookie", access_token, httponly=True)
+        response.set_cookie("admin", str(admin), httponly=True)
+        response.headers['X-CSRF-TOKEN-ACCESS'] = csrf_token
+        return response
+    except exceptions.FlaskAWSCognitoError:
+        return redirect(url_for('.sign_in'))
+
+
 
 @app.route('/')
+def login():
+    access_token = request.cookies.get("access_token_cookie")
+    if access_token:
+        return redirect(url_for('.home'))
+
+    else:
+        return redirect(url_for('.sign_in'))
+
+
+@app.route('/home')
 def home():
-    response = findings_table.scan(
-        FilterExpression=Attr('Published').eq(True)
-    )
-    items = response['Items']
-    ordered_items = sorted(items, key=lambda k: k['CreatedAt'], reverse=True)
-    for item in ordered_items:
-        timestamp = item['CreatedAt']
-        real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0))
-        item['CreatedAt'] = real_time
-    # make a list of recent approved findings only
-    return render_template('index.html', items=ordered_items)
+    # print(request.cookies.get("admin"))
+    # print(session['userName'])
+    # print(session['userId'])
+    # print(request.cookies.get("admin"))
+    verify_jwt_in_request()
+    if get_jwt_identity():
+        response = findings_table.scan(
+            FilterExpression=Attr('Published').eq(True)
+        )
+        items = response['Items']
+        ordered_items = sorted(items, key=lambda k: k['CreatedAt'], reverse=True)
+        for item in ordered_items:
+            timestamp = item['CreatedAt']
+            real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0))
+            item['CreatedAt'] = real_time
+        # make a list of recent approved findings only
+        data = {"username": str(session['userName']), "admin": request.cookies.get("admin")}
+        return render_template('index.html', items=ordered_items, data=data)
+    else:
+        return url_for('.sign_in')
 
 
 # Submit new findings
 @app.route('/submit', methods=['GET', 'POST'])
 def submit_new_finding():
+    verify_jwt_in_request()
+    if verify_jwt_in_request():
+        print("success")
+    else:
+        print("failure")
     form = SubmitForm(request.form)
     # validates input and csrf token
     if form.validate_on_submit():
@@ -67,6 +154,8 @@ def submit_new_finding():
 # Submission waiting for review
 @app.route('/review', methods=['GET', 'POST'])
 def review_list():
+    verify_jwt_in_request()
+
     response = submissions_table.scan(
         FilterExpression=Attr('Reviewed').eq(False)
     )
@@ -89,6 +178,8 @@ def review_list():
 # Delete a submission - remove it from the review page and move to trash
 @app.route('/submission/delete=<Uid>by=<CreatedBy>')
 def delete_submission(Uid, CreatedBy):
+    verify_jwt_in_request()
+
     submissions_table.update_item(
         Key={
             'Uid': Uid,
@@ -105,6 +196,8 @@ def delete_submission(Uid, CreatedBy):
 # Review a submission
 @app.route('/review/submission=<Uid>by=<CreatedBy>', methods=["GET", "POST"])
 def review_submission(Uid, CreatedBy):
+    verify_jwt_in_request()
+
     form = PublishForm(request.form)
     response = submissions_table.get_item(
         Key={
@@ -157,6 +250,8 @@ def review_submission(Uid, CreatedBy):
 # View a specific published finding
 @app.route('/findings/view/finding=<Uid>by=<CreatedBy>')
 def view_finding(Uid, CreatedBy):
+    verify_jwt_in_request()
+
     response = findings_table.get_item(
         Key={
             'Uid': Uid,
@@ -167,9 +262,12 @@ def view_finding(Uid, CreatedBy):
 
     return render_template("view_finding.html", item=item)
 
+
 # Search
 @app.route('/search', methods=["GET", "POST"])
 def search():
+    verify_jwt_in_request()
+
     form = SearchFrom(request.form)
     items_list = []
 
