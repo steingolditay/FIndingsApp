@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, DataRequired
 from wtforms.widgets import TextArea, Select
+from flask import  request
 
 
 select_field_choices = [("Low", "Low"), ("Medium", "Medium"), ("High", "High")]
@@ -32,7 +33,12 @@ class SubmitForm(FlaskForm):
 
 
 class User:
-    def __init__(self, user_id, username, admin):
-        self.user_id = user_id
-        self.username = username
+    def __init__(self, uid, name, last_name, email, admin):
+        self.uid = uid
+        self.name = name
+        self.last_name = last_name
+        self.email = email
         self.admin = admin
+
+
+

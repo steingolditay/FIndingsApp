@@ -178,17 +178,16 @@
                 })
             }
             // hide and show tag search
-            tagsSearch.addEventListener('input', function(){
-                for (let i = 0; i<tagItems.length; i++){
+            tagsSearch.addEventListener('input', function () {
+                for (let i = 0; i < tagItems.length; i++) {
                     let item = tagItems[i]
                     const itemId = item.id.toLowerCase()
                     const searchValue = tagsSearch.value.toLowerCase()
                     const parsedItemId = item.id.replace('&', '').replace(' ', '')
-                    if (itemId.includes(searchValue) || searchValue === ""){
-                        $("#"+parsedItemId.toString()).show(200)
-                    }
-                    else {
-                        $("#"+parsedItemId.toString()).hide(200)
+                    if (itemId.includes(searchValue) || searchValue === "") {
+                        $("#" + parsedItemId.toString()).show(200)
+                    } else {
+                        $("#" + parsedItemId.toString()).hide(200)
                     }
                 }
             })
