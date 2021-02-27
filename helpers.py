@@ -1,3 +1,5 @@
+import datetime
+
 tag_list = ["Architecture", "Environments", "Input and Error Handling", "Database", "DR & BC",
             "Version Management & Updates", "Logging & Monitoring", "Password Policy", "Encryption", "Sensitive Data",
             "Documentation & Legal Agreements", "Hardening", "Security Systems", "Configuration",
@@ -36,10 +38,28 @@ def search_results(keywords, tags_list, item):
     details = item['RiskDetails']
     details_strip = details.strip().split(' ')
     tags = item['Tags']
-    tags_strip = tags.strip().split(',')
 
-    if any(i in tags_list for i in tags_strip):
+    if any(i in tags_list for i in tags):
         return True
     elif any(i in keywords for i in title_strip) or any(i in keywords for i in body_strip) or any(i in keywords for i in details_strip):
         return True
 
+
+def get_user_data_from_cookies(user_request):
+    data = {"uid": user_request.cookies.get('uid'),
+            "username": user_request.cookies.get('username'),
+            "email": user_request.cookies.get('email'),
+            "admin": user_request.cookies.get("admin"),
+            "editor": user_request.cookies.get("editor")
+            }
+    return data
+
+
+def get_real_datetime_from_timestamp(timestamp):
+    real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0).strftime("%d-%m-%Y %H:%M:%S"))
+    return real_time
+
+
+def get_real_date_from_timestamp(timestamp):
+    real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0).strftime("%d-%m-%Y"))
+    return real_time

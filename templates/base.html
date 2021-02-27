@@ -37,17 +37,21 @@
         <div class="collapse navbar-collapse active" id="navbar">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/">בית</a>
+                    <a class="nav-link" id="homeTab" aria-current="page" href="/">בית</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/search">חיפוש</a>
+                    <a class="nav-link" id="searchTab" href="/search">חיפוש</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="/submit">הוספה</a>
+                    <a class="nav-link" id='submitTab' href="/submit">הוספה</a>
                 </li>
 
                 <li class="nav-item" id="reviewButton">
-                    <a class="nav-link" href="/review">סקירה</a>
+                    <a class="nav-link" id="reviewTab" href="/review">בקרה ראשונה</a>
+                </li>
+
+                <li class="nav-item" id="secondReviewButton">
+                    <a class="nav-link" id="second_reviewTab" href="/second_review">בקרה שנייה</a>
                 </li>
 
             </ul>
@@ -83,19 +87,35 @@
 
 <div class="container">
     {% block body %}
-        {#        Modal         #}
 
     {% endblock %}
 </div>
 
 <script>
+    const currentTab = window.location.pathname.replace("/", "") + "Tab"
+    const getTab = document.getElementById(currentTab)
+    if (getTab !== null){
+            getTab.classList.add("active")
+    }
+
+
+
+    console.log(currentTab)
     const nameField = document.getElementById('loggedInName')
     const reviewButton = document.getElementById('reviewButton')
+    const secondReviewButton = document.getElementById('secondReviewButton')
+    reviewButton.hidden = true
+    secondReviewButton.hidden = true
+
     const value = '{{ data.username }}' + " \n{{ data.email }}"
     nameField.innerText = value
 
-    if ('{{ data.admin }}' !== "True") {
-        reviewButton.hidden = true
+    if ('{{ data.admin }}' === "True") {
+        reviewButton.hidden = false
+        secondReviewButton.hidden = false
+    }
+    else if ('{{ data.editor }}' === "True"){
+        reviewButton.hidden = false
     }
 </script>
 

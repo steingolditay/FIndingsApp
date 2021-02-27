@@ -20,7 +20,7 @@
     <section class="py-5 text-center container">
         <div class="row">
             <div class="mx-auto">
-                <h1 style="display: inline" class="fw-light mx-5">ממתינים לבקרה ראשונה</h1>
+                <h1 style="display: inline" class="fw-light mx-5">ממתינים לבקרה שנייה</h1>
             </div>
         </div>
 
@@ -49,10 +49,9 @@
                             <li>הועלה ב: {{ item['CreatedAt'] }} </li>
                         </ul>
                         <a class="btn btn-lg btn-outline-primary"
-                           href="/review/submission={{ item['Uid'] }}by={{ item['CreatedBy'] }}">סקירה</a>
+                           href="/findings/second_review/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">סקירה</a>
                         <a class="btn btn-lg btn-outline-danger" data-bs-toggle="modal"
                            data-bs-target="#deleteModal-{{ item['Uid'] }}">מחיקה</a>
-
                     </div>
 
                 </div>
@@ -64,15 +63,15 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="deleteModal">אתה בטוח שברצונך למחוק את הממצא?</h5>
-                            <button type="button" class="btn-close mx-1" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <h5 class="modal-title" id="deleteModal">אתה בטוח שברצונך למחוק את {{ item['Title'] }}?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             מחיקה תעביר את הממצא לסל האשפה כך שניתן יהיה לשחזר אותו.
                         </div>
                         <div class="modal-footer">
                             <a class="btn btn-danger"
-                               href="/submission/delete={{ item['Uid'] }}by={{ item['CreatedBy'] }}">מחיקה</a>
+                               href="/findings/delete={{ item['Uid'] }}by={{ item['CreatedBy'] }}">מחיקה</a>
                         </div>
                     </div>
                 </div>

@@ -45,7 +45,7 @@
     </section>
     <small style="display: inline" class="fw-light">נוצר על ידי: {{ item['CreatedBy'] }}</small><br>
     <small style="display: inline" class="fw-light">נסקר על ידי:&nbsp {{ item['ReviewedBy'] }}</small><br>
-    <small style="display: inline" class="fw-light"> פורסם בתאריך:&nbsp {{ item['ReviewedAt'] }}</small><br>
+    <small style="display: inline" class="fw-light">תאריך פרסום:&nbsp {{ item['ReviewedAt'] }}</small><br>
 
     <hr>
     {#green : 70ad47#}
@@ -62,7 +62,8 @@
         {#Line Break    #}
         <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p style="font-size: 13.33px">סבירות מימוש הסיכון: <a style="font-size: 13.33px"><b>{{ item['Probability'] }}</b></a></p>
+        <p style="font-size: 13.33px">סבירות מימוש הסיכון: <a
+                style="font-size: 13.33px"><b>{{ item['Probability'] }}</b></a></p>
         <p style="font-size: 13.33px">חומרת הסיכון: <a style="font-size: 13.33px"><b>{{ item['Severity'] }}</b></a></p>
         <p style="font-size: 13.33px"><b> רמת סיכון:</b> <a style="font-size: 13.33px"><b>{{ item['OverallRisk'] }}</b></a>
         </p>
@@ -77,8 +78,17 @@
         <p id="title" style="font-size: 18.66px"><u>המלצות</u></p>
         <p id="recommendations" style="font-size: 13.33px"></p><br>
     </div>
+    <br><br>
+    <hr>
 
+    {% if data['admin'] %}
+        <div>
+        <br>
+            <a type="button" class="btn btn-sm btn-outline-primary"
+               href="/findings/edit/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">ערוך</a>
+        </div>
 
+    {% endif %}
 
     {# Format recommendations   #}
     <script>
@@ -103,19 +113,17 @@
         const findingDiv = document.getElementById('finding')
         const elements = findingDiv.getElementsByTagName('A')
 
-        for (i = 0; i<elements.length;i++) {
+        for (i = 0; i < elements.length; i++) {
             const el = elements[i]
 
-            if (el.innerText === "Low"){
-                el.innerHTML = "<b>נמוכה<b>"
+            if (el.innerText === "נמוכה") {
+                {#el.innerHTML = "<b>נמוכה<b>"#}
                 el.style.color = "#70ad47"
-            }
-            else if (el.innerText === "Medium"){
-                el.innerHTML = "<b>בינונית<b>"
+            } else if (el.innerText === "בינונית") {
+                {#el.innerHTML = "<b>בינונית<b>"#}
                 el.style.color = "#ffc000"
-            }
-            else if (el.innerText === "High"){
-                el.innerHTML = "<b>גבוהה<b>"
+            } else if (el.innerText === "גבוהה") {
+                {#el.innerHTML = "<b>גבוהה<b>"#}
                 el.style.color = "#ff0000"
             }
 

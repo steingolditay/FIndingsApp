@@ -59,7 +59,7 @@
     <section class="py-5 text-center container">
         <div id="header" class="row">
             <div class="mx-auto">
-                <h1 style="display: inline" class="fw-light mx-5">כתיבת ממצא</h1>
+                <h1 style="display: inline" class="fw-light mx-5">בקרה שנייה לממצא</h1>
             </div>
         </div>
     </section>
@@ -67,44 +67,20 @@
 
 
     <div class="row">
-        <div>
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header">
-                    <h4 style="display: inline" class="my-0 fw-normal" data-toggle="collapse"
-                        href="#card">{{ item['Title'] }}</h4>
-
-                    <a style="display: inline" class="btn btn-sm btn-upload float-end" data-toggle="collapse"
-                       href="#card"
-                       role="button" aria-expanded="false" aria-controls="card">
-                        +
-                    </a>
-                </div>
-                <div class="card-body collapse" id="card">
-                    <h4 class="card-title pricing-card-title">{{ item['Content'] }} </h4>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>נוצר על ידי: {{ item['CreatedBy'] }} </li>
-                        <li>נוצר בתאריך: {{ item['CreatedAt'] }} </li>
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-
-
         <div class="col-sm-8">
-            <form class="form-horizontal" action="/review/submission={{ item['Uid'] }}by={{ item['CreatedBy'] }}"
+            <form class="form-horizontal"
                   method="post">
                 {{ form.csrf_token }}
                 <div class="form-group">
                     <label for="title">כותרת הממצא</label>
-                    <input type="text" class="form-control" id="title" name="title" value="{{ form.title.data }}">
+                    <input type="text" class="form-control" id="title" name="title" value="{{ item['Title'] }}">
                     {% for error in form.title.errors %}
                         <li style="color: #9C1A1C">{{ error }}</li>
                     {% endfor %}
                     <br>
                     <label for="finding_description">פירוט הממצא</label>
                     <input type="text" class="form-control" id="finding_description" name="finding_description"
-                           value="{{ form.finding_description.data }}">
+                           value="{{ item['Description'] }}">
                     {% for error in form.finding_description.errors %}
                         <li style="color: #9C1A1C">{{ error }}</li>
                     {% endfor %}
@@ -157,7 +133,7 @@
                 <div class="form-group " id="container">
                     <label style="display: inline" for="risk_recommendations">המלצות</label>
                     <textarea class="form-control" id="risk_recommendations" name="risk_recommendations"
-                              rows="5"></textarea>
+                              rows="5">{{ item['Recommendations'] }}</textarea>
                     {% for error in form.risk_recommendations.errors %}
                         <li style="color: #9C1A1C">{{ error }}</li>
                     {% endfor %}
@@ -166,7 +142,7 @@
                 <div>
                     <input class="tags" type="hidden" id="tags" name="tags">
                     <input class="btn btn-outline-success mx-auto btn-lg" width="50" type="submit" id="submit"
-                           name="submit" value="פרסם">
+                           name="submit" value="שמור">
                 </div>
                 <br><br>
                 <br>
@@ -176,9 +152,9 @@
 
         <div class="container-fluid col-sm-4">
             <nav class="bg-light sidebar list-group-item">
-                     <div class="tag-container">
-                        <input id="tag-search" type="text" class="fw-light list-group-item" placeholder="טאגים...">
-                    </div>
+                <div class="tag-container">
+                    <input id="tag-search" type="text" class="fw-light list-group-item" placeholder="טאגים...">
+                </div>
                 <div class="sidebar-sticky scrollable">
                     {% for tag in tags %}
                         {% set finalTag = tag.replace('&', '').replace(' ', '') %}
@@ -198,16 +174,93 @@
     </div>
 
 
+    <script>
+    // Load defaults or form data
+        const title = document.getElementById('title')
+        const description = document.getElementById('finding_description')
+        const riskProbability = document.getElementById('risk_probability')
+        const riskSeverity = document.getElementById('risk_severity')
+        const riskLevel = document.getElementById('risk_level')
+        const riskDescription = document.getElementById('risk_description')
+        const recommendations = document.getElementById('risk_recommendations')
+
+        const s = recommendations.innerText
+
+        const formTitle = '{{ form.title.data }}'
+        const formDescription = '{{ form.finding_description.data }}'
+        const formProbability = '{{ form.risk_probability.data }}'
+        const formSeverity = '{{ form.risk_severity.data }}'
+        const formLevel = '{{ form.risk_level.data }}'
+        const formRiskDescription = '{{ form.risk_description.data }}'
+        const formRecommendations = '{{ form.risk_recommendations.data }}'
+
+        if (formTitle !== "") {
+            title.innerText = formTitle
+        } else {
+            title.innerText = '{{ item['Title'] }}'
+        }
+
+        if (formDescription !== "") {
+            description.innerText = formDescription
+        } else {
+            description.innerText = '{{ item['Description'] }}'
+        }
+
+        if (formProbability !== "" && formProbability.toString() !== 'None') {
+            selectElement(riskProbability, formProbability)
+        } else {
+            selectElement(riskProbability, '{{ item['Probability'] }}')
+        }
+
+        if (formSeverity !== "" && formSeverity.toString() !== 'None') {
+            selectElement(riskSeverity, formProbability)
+        } else {
+            selectElement(riskSeverity, '{{ item['Severity'] }}')
+        }
+        if (formLevel !== "" && formLevel.toString() !== 'None') {
+            selectElement(riskLevel, formLevel)
+        } else {
+            selectElement(riskLevel, '{{ item['OverallRisk'] }}')
+        }
+        if (formRiskDescription !== "") {
+            selectElement(riskDescription, formRiskDescription)
+        } else {
+            riskDescription.innerText = `{{ item['RiskDetails'] }}`
+        }
+
+        if (formRecommendations !== "") {
+            recommendations.innerText = formRecommendations
+        } else {
+            recommendations.innerHTML = `{{ item['Recommendations']}}`
+        }
+
+    function selectElement(element, valueToSelect) {
+        element.value = valueToSelect;
+    }
+
+    </script>
 
 
     <script>
         let tags = []
+
+
+        let currentTags = '{{ item['Tags'] }}'
+
         let tagsSearch = document.getElementById('tag-search')
         let tagItems = document.getElementsByClassName('tag-item')
         let hidden = document.getElementById('tags')
         let checkboxes = document.getElementsByClassName('checkbox')
+
+
+
         for (let i = 0; i < checkboxes.length; i++) {
             let checkbox = checkboxes[i]
+            if (currentTags.includes(checkbox.value)){
+                checkbox.checked = true
+                tags.push(checkbox.value)
+            }
+            hidden.value = tags
             checkbox.addEventListener('change', function () {
                 if (checkbox.checked) {
                     tags.push(checkbox.value)
