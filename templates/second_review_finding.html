@@ -63,6 +63,8 @@
             </div>
         </div>
     </section>
+
+    <small>בקרה ראשונה על ידי: {{ item['ReviewedBy'] }}</small>
     <hr>
 
 
@@ -269,7 +271,6 @@
                     tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
                 }
                 hidden.value = tags
-                console.log(hidden.value)
 
             })
         }

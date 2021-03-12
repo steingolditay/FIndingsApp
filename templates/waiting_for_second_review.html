@@ -20,21 +20,20 @@
     <section class="py-5 text-center container">
         <div class="row">
             <div class="mx-auto">
-                <h1 style="display: inline" class="fw-light mx-5">ממתינים לבקרה ראשונה</h1>
+                <h1 style="display: inline" class="fw-light mx-5">ממתינים לבקרה שנייה</h1>
             </div>
         </div>
 
 
     </section>
 
-    <a href="/trash"><img src="/static/trash.png" width="20" height="20" alt=""></a><small>({{ trash }})</small>
-
-
-
-
-
+    {% if data['admin'] %}
+        <a href="/findings_trash"><img src="/static/trash.png" width="20" height="20" alt=""></a>
+        <small>({{ trash }})</small>
+    {% endif %}
 
     <hr>
+
     {% if items|length %}
         {% for item in items %}
             <div class="col">
@@ -49,10 +48,9 @@
                             <li>הועלה ב: {{ item['CreatedAt'] }} </li>
                         </ul>
                         <a class="btn btn-lg btn-outline-primary"
-                           href="/review/submission={{ item['Uid'] }}by={{ item['CreatedBy'] }}">סקירה</a>
+                           href="/findings/second_review/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">סקירה</a>
                         <a class="btn btn-lg btn-outline-danger" data-bs-toggle="modal"
                            data-bs-target="#deleteModal-{{ item['Uid'] }}">מחיקה</a>
-
                     </div>
 
                 </div>
@@ -65,14 +63,15 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="deleteModal">אתה בטוח שברצונך למחוק את הממצא?</h5>
-                            <button type="button" class="btn-close mx-1" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close mx-1" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             מחיקה תעביר את הממצא לסל האשפה כך שניתן יהיה לשחזר אותו.
                         </div>
                         <div class="modal-footer">
                             <a class="btn btn-danger"
-                               href="/submission/delete={{ item['Uid'] }}by={{ item['CreatedBy'] }}">מחיקה</a>
+                               href="/findings/delete={{ item['Uid'] }}by={{ item['CreatedBy'] }}">מחיקה</a>
                         </div>
                     </div>
                 </div>

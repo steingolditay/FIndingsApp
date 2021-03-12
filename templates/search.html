@@ -144,6 +144,8 @@
                                                 <div class="btn-group">
                                                     <a type="button" class="btn btn-sm btn-outline-secondary"
                                                        href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">פתח</a>
+                                                    <a type="button" class="btn btn-sm btn-outline-secondary mx-1"
+                                                       href="/findings/download/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">הורד</a>
                                                     </button>
                                                     {% if data['admin'] %}
                                                         <a type="button"
@@ -174,6 +176,8 @@
                                                 <div class="btn-group">
                                                     <a type="button" class="btn btn-sm btn-outline-secondary"
                                                        href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">פתח</a>
+                                                    <a type="button" class="btn btn-sm btn-outline-secondary mx-1"
+                                                       href="/findings/download/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">הורד</a>
                                                     {% if data['admin'] %}
                                                         <a type="button"
                                                            class="btn btn-sm btn-outline-secondary mx-1"
@@ -199,10 +203,10 @@
             </div>
         {% else %}
             {% if is_search %}
-            <div>
-                <h3 class="text-center fw-light">החיפוש לא הניב תוצאות מתאימות...</h3>
-            </div>
-                {% endif %}
+                <div>
+                    <h3 class="text-center fw-light">החיפוש לא הניב תוצאות מתאימות...</h3>
+                </div>
+            {% endif %}
         {% endif %}
 
         <script src="/static/js/tagsInput.js"></script>

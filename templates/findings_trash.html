@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <title>Review</title>
+    <style>
+        .pricing-card-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* number of lines to show */
+            -webkit-box-orient: vertical;
+        }
+
+    </style>
+{% endblock %}
+
+
+{% block body %}
+
+    <section class="py-5 text-center container">
+        <div class="row">
+            <div class="mx-auto">
+                <h1 style="display: inline" class="fw-light mx-5">ממצאים לאחר בקרה שנמחקו</h1>
+            </div>
+        </div>
+    </section>
+
+    <hr>
+
+    {% if items|length %}
+        {% for item in items %}
+            <div class="col">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header">
+                        <h4 class="my-0 fw-normal">{{ item['Title'] }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title pricing-card-title">{{ item['Description'] }} </h4>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>נוצר על ידי: {{ item['CreatedBy'] }} </li>
+                            <li>נוצר בתאריך: {{ item['CreatedAt'] }} </li>
+                        </ul>
+                        <a class="btn btn-lg btn-outline-primary"
+                           href="/findings/view/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">צפייה</a>
+                        <a class="btn btn-lg btn-outline-success" data-bs-toggle="modal"
+                           data-bs-target="#deleteModal-{{ item['Uid'] }}">שחזור</a>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Popup Modal -->
+            <div class="modal fade" id="deleteModal-{{ item['Uid'] }}" tabindex="-1" aria-labelledby="deleteModal"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModal">אתה בטוח שברצונך לשחזר את הממצא?</h5>
+                            <button type="button" class="btn-close mx-1" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            שחזור הממצא יעביר אותו חזרה לרשימת הממצאים לבקרה ראשונה.
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-success"
+                               href="/findings/restore={{ item['Uid'] }}by={{ item['CreatedBy'] }}">שחזור</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+    {% else %}
+        <h3 style="display: inline" class="fw-light mx-auto">אין ממצאים להציג</h3>
+    {% endif %}
+
+
+
+
+
+{% endblock %}

@@ -1,4 +1,4 @@
-import datetime
+import datetime, time
 
 tag_list = ["Architecture", "Environments", "Input and Error Handling", "Database", "DR & BC",
             "Version Management & Updates", "Logging & Monitoring", "Password Policy", "Encryption", "Sensitive Data",
@@ -63,3 +63,8 @@ def get_real_datetime_from_timestamp(timestamp):
 def get_real_date_from_timestamp(timestamp):
     real_time = str(datetime.datetime.fromtimestamp(float(timestamp) // 1000.0).strftime("%d-%m-%Y"))
     return real_time
+
+
+def get_current_timestamp():
+    return str(round(time.time() * 1000))
+

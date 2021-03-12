@@ -9,15 +9,17 @@
 
         }
 
-        p {
+        #finding.p {
             font-family: Tahoma;
             margin: 0;
             padding: 0;
+            text-align: right;
+            word-wrap: break-word;
         }
 
         br {
             font-family: Tahoma;
-            font-size: 18.66px;
+            font-size: 14pt;
             line-height: 18.66px;
             max-lines: 1;
             line-break: initial;
@@ -27,9 +29,24 @@
             content: "";
         }
 
+        #finding {
+            width: 36em;
+            max-width: 100%;
+
+        }
+
         #title {
             margin-bottom: 10px;
 
+        }
+
+        .pModified {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            width: 50rem;
+            word-wrap: normal;
         }
     </style>
 {% endblock %}
@@ -43,69 +60,112 @@
         </div>
 
     </section>
-    <small style="display: inline" class="fw-light">נוצר על ידי: {{ item['CreatedBy'] }}</small><br>
-    <small style="display: inline" class="fw-light">נסקר על ידי:&nbsp {{ item['ReviewedBy'] }}</small><br>
-    <small style="display: inline" class="fw-light">תאריך פרסום:&nbsp {{ item['ReviewedAt'] }}</small><br>
+    <small style="display: inline" class="fw-light">נוצר על ידי: {{ item['CreatedBy'] }} בתאריך: {{ item['CreatedAt'] }}</small><br>
+    <small style="display: inline" class="fw-light">נסקר על ידי:&nbsp {{ item['firstReviewedBy'] }} בתאריך: {{ item['firstReviewedAt'] }}</small><br>
+{#    {% if item['firstReviewedAt'] != item['LastEditAt'] and  item['secondReviewedAt'] != item['LastEditAt'] %} }#}
+{#        <small style="display: inline" class="fw-light">עדכון אחרון:&nbsp {{ item['LastEditAt'] }} על ידי {% item['LastEditBy'] %}</small><br>#}
+{#    {% endif %}#}
+    {% if item['secondReviewedAt'] != "" %}
+        <small style="display: inline" class="fw-light">אושר על ידי:&nbsp {{ item['secondReviewedBy'] }} בתאריך: {{ item['secondReviewedAt'] }}</small><br>
+    {% endif %}
+
+
+        {% if item['firstReviewedAt'] != item['LastEditAt']  and  item['secondReviewedAt'] != item['LastEditAt']%}
+        <small style="display: inline" class="fw-light">עדכון אחרון:&nbsp {{ item['LastEditBy'] }} בתאריך: {{ item['LastEditAt'] }} </small><br>
+        {% endif %}
+
+
 
     <hr>
     {#green : 70ad47#}
     {#yello : ffc000 #}
     {#red :ff0000 #}
     {#     #}
-    <div id="finding">
-        <p style="font-size: 21px"><b>{{ item['Title'] }}</b></p>
-        {#Line Break    #}
-        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+    <div class="container">
+        <div class="row">
+            <div id="finding" class="col">
+                <p class="pModified" style="font-size: 21px"><b>{{ item['Title'] }}</b></p>
+                {#Line Break    #}
+                <p id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p id="title" style="font-size: 18.66px"><u>פירוט הממצא</u></p>
-        <p style="font-size: 13.33px">{{ item['Description'] }}</p>
-        {#Line Break    #}
-        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+                <p style="font-size: 18.66px"><u>פירוט הממצא</u></p>
+                <p class="pModified" style="font-size: 13.33px">{{ item['Description'] }}</p>
+                {#Line Break    #}
+                <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p style="font-size: 13.33px">סבירות מימוש הסיכון: <a
-                style="font-size: 13.33px"><b>{{ item['Probability'] }}</b></a></p>
-        <p style="font-size: 13.33px">חומרת הסיכון: <a style="font-size: 13.33px"><b>{{ item['Severity'] }}</b></a></p>
-        <p style="font-size: 13.33px"><b> רמת סיכון:</b> <a style="font-size: 13.33px"><b>{{ item['OverallRisk'] }}</b></a>
-        </p>
-        {#Line Break    #}
-        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+                <p style="font-size: 13.33px">סבירות מימוש הסיכון:<a
+                        style="font-size: 13.33px"><b> {{ item['Probability'] }}</b></a></p>
+                <p style="font-size: 13.33px">חומרת הסיכון:<a style="font-size: 13.33px"><b> {{ item['Severity'] }}</b></a>
+                </p>
+                <p style="font-size: 13.33px"><b> רמת סיכון:</b><a
+                        style="font-size: 13.33px"><b> {{ item['OverallRisk'] }}</b></a></p>
 
-        <p id="title" style="font-size: 18.66px"><u>פירוט מימוש הסיכון</u></p>
-        <p style="font-size: 13.33px">{{ item['RiskDetails'] }}</p>
-        {#Line Break    #}
-        <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+                {#Line Break    #}
+                <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
 
-        <p id="title" style="font-size: 18.66px"><u>המלצות</u></p>
-        <p id="recommendations" style="font-size: 13.33px"></p><br>
+                <p id="title" style="font-size: 18.66px"><u>פירוט מימוש הסיכון</u></p>
+                <p class="pModified text-wrap" style="font-size: 13.33px">{{ item['RiskDetails'] }}</p>
+
+
+                {#Line Break    #}
+                <p class="" id="lineBreak" style="font-size: 18.66px">&nbsp</p>
+
+                <p id="title" style="font-size: 18.66px"><u>המלצות</u></p>
+                <p class="pModified" id="recommendations" style="font-size: 13.33px"></p>
+
+                <hr>
+                <a id="title" style="font-size: 18.66px"><u>תגיות</u></a>
+                <p class="" id="tags" style="font-size: 13.33px">{{ item['Tags'] }}</p>
+
+            </div>
+
+        </div>
+
+
     </div>
-    <br><br>
+
     <hr>
 
-    {% if data['admin'] %}
-        <div>
+
+    {% if data['admin']  and not item['Deleted'] %}
         <br>
+            <br>
             <a type="button" class="btn btn-sm btn-outline-primary"
                href="/findings/edit/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">ערוך</a>
+            <a type="button" class="btn btn-sm btn-outline-primary"
+               href="/findings/download/finding={{ item['Uid'] }}by={{ item['CreatedBy'] }}">הורד</a>
+        <a></a>
         </div>
+
+
 
     {% endif %}
 
-    {# Format recommendations   #}
-    <script>
-        const element = document.getElementById("recommendations")
-        const text = `{{ item['Recommendations'] }}`
 
-        const split = text.split("\n")
+    {# Format recommendations and tags#}
+    <script>
+        const recoElement = document.getElementById("recommendations")
+        const tagsElement = document.getElementById("tags")
+
+        const recommendations = `{{ item['Recommendations'] }}`
+        const tags = "{{ item['Tags'] }}"
+
+        const recoSplit = recommendations.split("\n")
         let finalString = ""
 
-
-        for (let x = 0; x < split.length; x++) {
-            const splitText = split[x].trim()
+        for (let x = 0; x < recoSplit.length; x++) {
+            const splitText = recoSplit[x].trim()
             const finalText = '\u2713 ' + splitText
             finalString = finalString + finalText + "\n"
 
         }
-        element.innerText = finalString
+        recoElement.innerText = finalString
+
+
+        let s = ""
+        tagsElement.innerText = tags.toString().replaceAll("&#39;", "").replace("[", "").replace("]", "")
+
+
     </script>
 
     {# Format ranks colors  #}
@@ -116,25 +176,17 @@
         for (i = 0; i < elements.length; i++) {
             const el = elements[i]
 
-            if (el.innerText === "נמוכה") {
+            if (el.innerText === " נמוכה") {
                 {#el.innerHTML = "<b>נמוכה<b>"#}
                 el.style.color = "#70ad47"
-            } else if (el.innerText === "בינונית") {
+            } else if (el.innerText === " בינונית") {
                 {#el.innerHTML = "<b>בינונית<b>"#}
                 el.style.color = "#ffc000"
-            } else if (el.innerText === "גבוהה") {
+            } else if (el.innerText === " גבוהה") {
                 {#el.innerHTML = "<b>גבוהה<b>"#}
                 el.style.color = "#ff0000"
             }
-
         }
-
-        {#for (let x = 0; x < split.length; x++) {#}
-        {#    const splitText = split[x].trim()#}
-        {#    const finalText = '\u2713 ' + splitText#}
-        {#    finalString = finalString + finalText + "\n"#}
-
-
     </script>
 
 {% endblock %}

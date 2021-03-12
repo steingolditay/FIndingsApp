@@ -155,7 +155,7 @@
 
                 <br>
                 <div class="form-group " id="container">
-                    <label style="display: inline" for="risk_recommendations">המלצות</label>
+                    <label style="display: inline" for="risk_recommendations">המלצות (יש להפריד כל בין המלצות באמצעות אנטר)</label>
                     <textarea class="form-control" id="risk_recommendations" name="risk_recommendations"
                               rows="5"></textarea>
                     {% for error in form.risk_recommendations.errors %}
@@ -216,7 +216,6 @@
                     tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
                 }
                 hidden.value = tags
-                console.log(hidden.value)
 
             })
         }

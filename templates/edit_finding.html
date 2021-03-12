@@ -244,7 +244,6 @@
 
 
         let currentTags = '{{ item['Tags'] }}'
-        console.log(currentTags)
 
         let tagsSearch = document.getElementById('tag-search')
         let tagItems = document.getElementsByClassName('tag-item')
@@ -268,7 +267,6 @@
                     tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
                 }
                 hidden.value = tags
-                console.log(hidden.value)
 
             })
         }

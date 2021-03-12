@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField
+from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Length, DataRequired
 from wtforms.widgets import TextArea, Select
 
@@ -29,6 +29,10 @@ class PublishForm(FlaskForm):
 class SubmitForm(FlaskForm):
     title = StringField('title', validators=[InputRequired(), Length(min=6)])
     content = StringField('content', validators=[InputRequired(), Length(min=20)])
+
+
+class ButtonForm(FlaskForm):
+    submit = SubmitField('submit')
 
 
 class User:

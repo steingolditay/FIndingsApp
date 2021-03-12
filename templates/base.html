@@ -19,6 +19,12 @@
           rel="stylesheet">
 
     {% block head %} {% endblock %}
+    <style>
+
+        body{
+            padding-bottom: 50px;
+        }
+    </style>
 </head>
 
 
@@ -98,9 +104,6 @@
             getTab.classList.add("active")
     }
 
-
-
-    console.log(currentTab)
     const nameField = document.getElementById('loggedInName')
     const reviewButton = document.getElementById('reviewButton')
     const secondReviewButton = document.getElementById('secondReviewButton')
