@@ -105,6 +105,7 @@ def sign_out():
 # Only allowed to login from Whitehat's Azure AD.
 @app.route('/sign_in')
 def sign_in():
+    print("bla bla " + aws_auth.get_sign_in_url())
     return redirect(aws_auth.get_sign_in_url())
 
 # Get credentials and gather user data
